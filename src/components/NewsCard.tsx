@@ -1,6 +1,7 @@
 import React from 'react';
-import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion';
-import { NewsArticle } from '../types/news';
+import { motion, useMotionValue, useTransform } from 'framer-motion';
+import type { PanInfo } from 'framer-motion';
+import type { NewsArticle } from '../types/news';
 import { Heart, X } from 'lucide-react';
 import { cn } from '../utils/cn';
 

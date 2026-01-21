@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { NewsArticle } from '../types/news';
-import { Calendar, Filter, ChevronRight } from 'lucide-react';
+import type { NewsArticle } from '../types/news';
+import { Bookmark, ChevronRight } from 'lucide-react';
 import { cn } from '../utils/cn';
 
 interface SavedNewsViewProps {
@@ -21,8 +21,14 @@ export const SavedNewsView: React.FC<SavedNewsViewProps> = ({ savedArticles }) =
     // フィルタリング
     const filteredArticles = savedArticles.filter(article => {
         const matchesTag = selectedTag ? article.tag === selectedTag : true;
-        // 日付フィルタ（現在は簡易的に全表示だが、機能として実装）
-        return matchesTag;
+
+        // 日付フィルタの簡易的な実装
+        if (timeframe === 'day') {
+            const today = new Date().toISOString().split('T')[0];
+            return matchesTag && article.publishedAt === today;
+        }
+
+        return matchesTag; // week の場合は全件表示（簡易実装）
     });
 
     if (savedArticles.length === 0) {
@@ -134,4 +140,3 @@ export const SavedNewsView: React.FC<SavedNewsViewProps> = ({ savedArticles }) =
     );
 };
 
-import { Bookmark } from 'lucide-react';

@@ -1,4 +1,4 @@
-import { NewsArticle } from '../types/news';
+import type { NewsArticle } from '../types/news';
 
 export const MOCK_NEWS: NewsArticle[] = [
     {
@@ -20,7 +20,7 @@ export const MOCK_NEWS: NewsArticle[] = [
         category: 'サイエンス',
         tag: '宇宙',
         imageUrl: 'https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?auto=format&fit=crop&q=80&w=800',
-        publishedAt: '2026-01-20',
+        publishedAt: '2026-01-21',
         source: 'ScienceNow'
     },
     {
@@ -31,7 +31,7 @@ export const MOCK_NEWS: NewsArticle[] = [
         category: 'ライフスタイル',
         tag: 'SDGs',
         imageUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=80&w=800',
-        publishedAt: '2026-01-19',
+        publishedAt: '2026-01-21',
         source: 'EcoTimes'
     },
     {
@@ -42,7 +42,7 @@ export const MOCK_NEWS: NewsArticle[] = [
         category: 'エンタメ',
         tag: 'アート',
         imageUrl: 'https://images.unsplash.com/photo-1520529611443-424a52047805?auto=format&fit=crop&q=80&w=800',
-        publishedAt: '2026-01-21',
+        publishedAt: '2026-01-20',
         source: 'ArtFocus'
     },
     {
@@ -53,7 +53,40 @@ export const MOCK_NEWS: NewsArticle[] = [
         category: 'テクノロジー',
         tag: '教育',
         imageUrl: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800',
-        publishedAt: '2026-01-21',
+        publishedAt: '2026-01-20',
         source: 'EduTech'
+    },
+    {
+        id: '6',
+        title: '深海でのプラスチック分解細菌を発見',
+        summary: 'マリアナ海溝付近で、海洋プラスチックをわずか数週間で完全に分解する新種の細菌が特定されました。プラスチック汚染解決に期待。',
+        content: '詳細な本文がここに入ります...',
+        category: 'サイエンス',
+        tag: 'マリンクリーン',
+        imageUrl: 'https://images.unsplash.com/photo-1583212292454-1fe6229603b7?auto=format&fit=crop&q=80&w=800',
+        publishedAt: '2026-01-19',
+        source: 'OceanWeekly'
+    },
+    {
+        id: '7',
+        title: '完全自動運転バス、地方都市での本格運用を開始',
+        summary: '高齢化が進む地域での移動手段として、L5レベルの自動運転バスが24時間運行を開始。安全性と利便性の両立を実現。',
+        content: '詳細な本文がここに入ります...',
+        category: 'ビジネス',
+        tag: 'モビリティ',
+        imageUrl: 'https://images.unsplash.com/photo-1557223562-6c77ef16210f?auto=format&fit=crop&q=80&w=800',
+        publishedAt: '2026-01-19',
+        source: 'BizInsight'
+    },
+    {
+        id: '8',
+        title: '家庭用ホログラムディスプレイが一般販売へ',
+        summary: '特別なメガネなしで3D映像を空中に投影できるディスプレイが登場。遠く離れた家族とのビデオ通話がよりリアルに。',
+        content: '詳細な本文がここに入ります...',
+        category: 'テクノロジー',
+        tag: 'ガジェット',
+        imageUrl: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&q=80&w=800',
+        publishedAt: '2026-01-18',
+        source: 'FutureLife'
     }
 ];
