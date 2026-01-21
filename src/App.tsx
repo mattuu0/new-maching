@@ -126,8 +126,7 @@ function App() {
           } />
 
           <Route path="/saved" element={<SavedNewsView savedArticles={savedArticles} />} />
-          <Route path="/profile/:userid" element={<ProfilePage savedArticles={savedArticles} />} />
-          <Route path="/profile" element={<Navigate to="/profile/sample" replace />} />
+          <Route path="/profile" element={<ProfilePage savedArticles={savedArticles} />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
@@ -150,7 +149,7 @@ function App() {
         />
         <BottomTab
           active={activeView === 'profile'}
-          onClick={() => navigate('/profile/sample')}
+          onClick={() => navigate('/profile?userid=sample')}
           icon={<UserIcon size={24} />}
           label="アカウント"
           color="indigo"
