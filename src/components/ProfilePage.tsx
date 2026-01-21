@@ -3,6 +3,7 @@ import { Calendar, MapPin, Bookmark, Edit2, Check, X, Copy } from 'lucide-react'
 import type { NewsArticle } from '../types/news';
 import { NewsDetailModal } from './NewsDetailModal';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useParams } from 'react-router-dom';
 
 // Helper for conditional class names
 const cn = (...classes: (string | boolean | undefined | null)[]) => classes.filter(Boolean).join(' ');
@@ -15,15 +16,16 @@ interface ProfilePageProps {
  * ユーザープロフィールコンポーネント
  */
 export const ProfilePage: React.FC<ProfilePageProps> = ({ savedArticles }) => {
+    const { userid } = useParams<{ userid: string }>();
     const [selectedArticle, setSelectedArticle] = useState<NewsArticle | null>(null);
     const [isEditing, setIsEditing] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
 
     const [profile, setProfile] = useState({
-        name: 'サンプルユーザー',
+        name: userid === 'sample' ? 'サンプルユーザー' : (userid || 'ゲストユーザー'),
         bio: '最新のテクノロジーとサイエンスに興味があります。AIが変える未来を NewsMatch で追いかけています。🔭💻 #Tech #Science #Future',
         location: '東京, 日本',
-        website: 'newsmatch.jp/profile'
+        website: `newsmatch.jp/profile/${userid || 'sample'}`
     });
 
     const [tempProfile, setTempProfile] = useState({ ...profile });
@@ -34,7 +36,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ savedArticles }) => {
     };
 
     const copyProfileLink = () => {
-        const url = 'https://mattuu.com/new-maching/';
+        const url = `https://mattuu.com/new-maching/profile/${userid || 'sample'}`;
         navigator.clipboard.writeText(url).then(() => {
             setIsCopied(true);
             setTimeout(() => setIsCopied(false), 2000);

@@ -8,17 +8,24 @@ import { TutorialOverlay } from './components/TutorialOverlay';
 import { AnimatePresence, motion } from 'framer-motion';
 import { RotateCcw, LayoutGrid, Bookmark, User as UserIcon } from 'lucide-react';
 import { cn } from './utils/cn';
-
-/**
- * ビューの型定義
- */
-type ActiveView = 'discover' | 'saved' | 'profile';
+import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 
 function App() {
-  const [activeView, setActiveView] = useState<ActiveView>('discover');
+  const navigate = useNavigate();
+  const location = useLocation();
   const [newsStack, setNewsStack] = useState<NewsArticle[]>([]);
   const [savedArticles, setSavedArticles] = useState<NewsArticle[]>([]);
   const [showTutorial, setShowTutorial] = useState(false);
+
+  // パスから現在のアクティブビューを判定
+  const getActiveView = () => {
+    if (location.pathname === '/') return 'discover';
+    if (location.pathname === '/saved') return 'saved';
+    if (location.pathname.startsWith('/profile')) return 'profile';
+    return 'discover';
+  };
+
+  const activeView = getActiveView();
 
   // 初期データの読み込みとチュートリアルの表示判定
   useEffect(() => {
@@ -63,8 +70,8 @@ function App() {
       <TutorialOverlay isVisible={showTutorial} onClose={closeTutorial} />
 
       {/* ヘッダー */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 px-6 py-4">
-        <div className="flex justify-between items-center w-full">
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 px-6 py-4" onClick={() => navigate('/')}>
+        <div className="flex justify-between items-center w-full cursor-pointer">
           <h1 className="text-xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent tracking-tighter">
             NewsMatch
           </h1>
@@ -72,15 +79,9 @@ function App() {
       </header>
 
       <main className="flex-1 relative overflow-hidden bg-gray-50/50">
-        <AnimatePresence mode="wait">
-          {activeView === 'discover' && (
-            <motion.div
-              key="discover"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="h-full flex flex-col items-center justify-center p-6"
-            >
+        <Routes>
+          <Route path="/" element={
+            <div className="h-full flex flex-col items-center justify-center p-6">
               <div className="relative w-full h-full max-h-[600px] flex items-center justify-center">
                 <AnimatePresence>
                   {newsStack.length > 0 ? (
@@ -121,54 +122,35 @@ function App() {
                   )}
                 </AnimatePresence>
               </div>
-            </motion.div>
-          )}
+            </div>
+          } />
 
-          {activeView === 'saved' && (
-            <motion.div
-              key="saved"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="h-full"
-            >
-              <SavedNewsView savedArticles={savedArticles} />
-            </motion.div>
-          )}
-
-          {activeView === 'profile' && (
-            <motion.div
-              key="profile"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              className="h-full"
-            >
-              <ProfilePage savedArticles={savedArticles} />
-            </motion.div>
-          )}
-        </AnimatePresence>
+          <Route path="/saved" element={<SavedNewsView savedArticles={savedArticles} />} />
+          <Route path="/profile/:userid" element={<ProfilePage savedArticles={savedArticles} />} />
+          <Route path="/profile" element={<Navigate to="/profile/sample" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
 
       {/* ボトムナビゲーション */}
       <nav className="bg-white border-t border-gray-100 px-6 py-3 pb-8 flex justify-around items-center">
         <BottomTab
           active={activeView === 'discover'}
-          onClick={() => setActiveView('discover')}
+          onClick={() => navigate('/')}
           icon={<LayoutGrid size={24} />}
           label="発見"
           color="blue"
         />
         <BottomTab
           active={activeView === 'saved'}
-          onClick={() => setActiveView('saved')}
+          onClick={() => navigate('/saved')}
           icon={<Bookmark size={24} />}
           label="保存済み"
           color="red"
         />
         <BottomTab
           active={activeView === 'profile'}
-          onClick={() => setActiveView('profile')}
+          onClick={() => navigate('/profile/sample')}
           icon={<UserIcon size={24} />}
           label="アカウント"
           color="indigo"
