@@ -10,7 +10,7 @@ interface NewsDetailModalProps {
 
 /**
  * ニュース詳細表示用モーダルコンポーネント
- * AIによる要約をメインに表示します
+ * AIによる要約をメインに表示し、リッチな詳細本文を提供します
  */
 export const NewsDetailModal: React.FC<NewsDetailModalProps> = ({ article, onClose }) => {
     if (!article) return null;
@@ -21,55 +21,55 @@ export const NewsDetailModal: React.FC<NewsDetailModalProps> = ({ article, onClo
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-md flex items-end sm:items-center justify-center"
+                className="fixed inset-0 z-[200] bg-black/70 backdrop-blur-xl flex items-end sm:items-center justify-center overflow-hidden"
                 onClick={onClose}
             >
                 <motion.div
                     initial={{ y: "100%" }}
                     animate={{ y: 0 }}
                     exit={{ y: "100%" }}
-                    transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                    className="bg-white w-full max-w-lg h-[90vh] sm:h-auto sm:max-h-[85vh] rounded-t-[40px] sm:rounded-[40px] overflow-hidden flex flex-col shadow-2xl"
+                    transition={{ type: "spring", damping: 30, stiffness: 250 }}
+                    className="bg-white w-full max-w-lg h-[92vh] sm:h-auto sm:max-h-[85vh] rounded-t-[48px] sm:rounded-[48px] overflow-hidden flex flex-col shadow-[0_-20px_40px_-15px_rgba(0,0,0,0.3)]"
                     onClick={(e) => e.stopPropagation()}
                 >
                     {/* ヘッダー画像エリア */}
-                    <div className="relative h-64 shrink-0">
+                    <div className="relative h-72 shrink-0 group">
                         <img
                             src={article.imageUrl}
                             alt={article.title}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-black/20" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/20 to-black/30" />
 
                         {/* 閉じるボタン */}
                         <button
                             onClick={onClose}
-                            className="absolute top-6 right-6 p-2 bg-black/20 backdrop-blur-md hover:bg-black/40 rounded-full text-white transition-colors"
+                            className="absolute top-8 right-8 p-3 bg-black/30 backdrop-blur-md hover:bg-black/60 rounded-full text-white transition-all active:scale-90"
                         >
                             <X size={20} />
                         </button>
 
                         {/* カテゴリタグ */}
-                        <div className="absolute bottom-6 left-8 flex gap-2">
-                            <span className="px-3 py-1 bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">
+                        <div className="absolute bottom-8 left-8 flex items-center gap-3">
+                            <span className="px-4 py-2 bg-blue-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl shadow-xl shadow-blue-500/20">
                                 {article.category}
                             </span>
-                            <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-gray-900 text-[10px] font-bold rounded-full shadow-lg">
+                            <span className="px-4 py-2 bg-white/90 backdrop-blur-sm text-gray-900 text-[10px] font-black rounded-2xl shadow-lg uppercase tracking-widest">
                                 #{article.tag}
                             </span>
                         </div>
                     </div>
 
                     {/* コンテンツエリア */}
-                    <div className="flex-1 overflow-y-auto px-8 py-8 space-y-8">
-                        <div className="space-y-4">
-                            <div className="flex items-center gap-3 text-gray-400">
-                                <div className="flex items-center gap-1.5 font-bold text-[10px] uppercase">
-                                    <Calendar size={12} />
+                    <div className="flex-1 overflow-y-auto px-8 py-10 space-y-10 no-scrollbar">
+                        <div className="space-y-6">
+                            <div className="flex items-center gap-4 text-gray-400">
+                                <div className="flex items-center gap-2 font-black text-[11px] uppercase tracking-widest">
+                                    <Calendar size={14} className="text-blue-500" />
                                     {article.publishedAt.replace(/-/g, '/')}
                                 </div>
                                 <div className="w-1.5 h-1.5 bg-gray-200 rounded-full" />
-                                <div className="text-[10px] font-bold uppercase tracking-widest">{article.source}</div>
+                                <div className="text-[11px] font-black uppercase tracking-[0.2em]">{article.source}</div>
                             </div>
                             <h2 className="text-3xl font-black text-gray-900 leading-tight tracking-tight">
                                 {article.title}
@@ -77,33 +77,46 @@ export const NewsDetailModal: React.FC<NewsDetailModalProps> = ({ article, onClo
                         </div>
 
                         {/* AI要約セクション */}
-                        <div className="bg-blue-50/50 rounded-[32px] p-6 border border-blue-100/50 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-4 opacity-10">
-                                <Bookmark size={48} className="text-blue-600" />
+                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50/30 rounded-[40px] p-8 border border-blue-100/50 relative overflow-hidden group">
+                            <div className="absolute -top-4 -right-4 p-4 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity duration-1000">
+                                <Bookmark size={120} className="text-blue-600" />
                             </div>
-                            <div className="flex items-center gap-2 mb-4">
-                                <span className="flex h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
-                                <span className="text-xs font-black text-blue-600 uppercase tracking-widest">AI 要約分析</span>
+                            <div className="flex items-center gap-2 mb-6">
+                                <div className="flex gap-1">
+                                    <span className="w-1 h-3 bg-blue-600 rounded-full" />
+                                    <span className="w-1 h-3 bg-blue-400 rounded-full" />
+                                    <span className="w-1 h-3 bg-blue-200 rounded-full" />
+                                </div>
+                                <span className="text-[10px] font-black text-blue-600 uppercase tracking-[0.25em]">AI SUMMARY ANALYSIS</span>
                             </div>
-                            <p className="text-gray-800 leading-relaxed font-bold text-lg">
+                            <p className="text-gray-900 leading-relaxed font-bold text-xl tracking-tight">
                                 {article.summary}
                             </p>
                         </div>
 
-                        {/* 本文（AI要約をメインとするため簡略化、またはプレースホルダー） */}
-                        <div className="space-y-4 pb-8">
-                            <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em]">詳細レポート</h3>
-                            <p className="text-gray-600 leading-loose">
-                                {article.content || "このニュースの詳細な分析と背景情報は、現在AIによって生成されています。最新の動向に基づいた包括的な情報を提供するため、複数のソースからデータを統合し、精度の高い内容をお届けします。"}
-                            </p>
+                        {/* 本文詳細 */}
+                        <div className="space-y-6 pb-12">
+                            <div className="flex items-center gap-4">
+                                <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">詳細レポート</h3>
+                                <div className="h-px bg-gray-100 flex-1"></div>
+                            </div>
+                            <div className="text-gray-600 leading-[2.2] font-medium text-[15px] space-y-6">
+                                {article.content ? (
+                                    article.content.split('\n\n').map((paragraph, idx) => (
+                                        <p key={idx}>{paragraph}</p>
+                                    ))
+                                ) : (
+                                    <p>このニュースの詳細な背景情報は現在AIによって解析されています。事実関係の統合と最新の市場動向を反映した包括的なレポートを準備中です。</p>
+                                )}
+                            </div>
                         </div>
                     </div>
 
                     {/* アクションバー */}
-                    <div className="p-6 bg-white border-t border-gray-50 flex gap-4 shrink-0">
+                    <div className="p-8 bg-white border-t border-gray-50 flex gap-4 shrink-0">
                         <button
                             onClick={onClose}
-                            className="flex-1 h-14 bg-gray-900 text-white rounded-2xl font-bold hover:bg-black active:scale-95 transition-all shadow-xl shadow-gray-200"
+                            className="flex-1 h-18 bg-gray-900 text-white rounded-[28px] font-black text-sm tracking-widest uppercase hover:bg-black active:scale-95 transition-all shadow-2xl shadow-gray-200"
                         >
                             閉じる
                         </button>

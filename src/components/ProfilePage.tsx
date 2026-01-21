@@ -1,159 +1,203 @@
 import React, { useState } from 'react';
-import { Calendar, Link as LinkIcon, MapPin, ChevronRight, Bookmark } from 'lucide-react';
+import { Calendar, MapPin, Bookmark, Edit2, Check, X } from 'lucide-react';
 import type { NewsArticle } from '../types/news';
-import { cn } from '../utils/cn';
 import { NewsDetailModal } from './NewsDetailModal';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ProfilePageProps {
     savedArticles: NewsArticle[];
 }
 
 /**
- * ユーザープロフィールコンポーネント (Twitter風)
+ * ユーザープロフィールコンポーネント
+ * ミニマルで洗練された独自デザイン
  */
 export const ProfilePage: React.FC<ProfilePageProps> = ({ savedArticles }) => {
     const [selectedArticle, setSelectedArticle] = useState<NewsArticle | null>(null);
-    const [activeTab, setActiveTab] = useState<'saved' | 'likes'>('saved');
+    const [isEditing, setIsEditing] = useState(false);
+
+    // プロフィール情報（本来はグローバルステートやサーバーで管理するが、ここではローカルでモック）
+    const [profile, setProfile] = useState({
+        name: 'サンプルユーザー',
+        bio: '最新のテクノロジーとサイエンスに興味があります。AIが変える未来を NewsMatch で追いかけています。🔭💻 #Tech #Science #Future',
+        location: '東京, 日本',
+        website: 'newsmatch.jp/profile'
+    });
+
+    const [tempProfile, setTempProfile] = useState({ ...profile });
+
+    const handleSave = () => {
+        setProfile({ ...tempProfile });
+        setIsEditing(false);
+    };
 
     return (
-        <div className="flex flex-col h-full bg-white overflow-y-auto no-scrollbar">
+        <div className="flex flex-col h-full bg-gray-50 overflow-y-auto no-scrollbar pb-10">
             {/* 詳細モーダル */}
             <NewsDetailModal
                 article={selectedArticle}
                 onClose={() => setSelectedArticle(null)}
             />
 
-            {/* ヘッダー背景（カバー画像） */}
-            <div className="relative h-32 shrink-0 bg-gray-200">
-                <img
-                    src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=800"
-                    className="w-full h-full object-cover"
-                    alt="cover"
-                />
-            </div>
-
-            {/* プロフィール情報エリア */}
-            <div className="px-5 pb-4 relative">
-                {/* プロフィール画像 */}
-                <div className="absolute -top-12 left-5">
-                    <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 border-4 border-white flex items-center justify-center text-white text-3xl font-bold shadow-md">
-                        S
-                    </div>
+            {/* ヘッダーセクション（独自デザイン） */}
+            <div className="relative bg-white pb-6 shadow-sm border-b border-gray-100">
+                {/* カバーグラデーション */}
+                <div className="h-40 w-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 overflow-hidden relative">
+                    <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
                 </div>
 
-                {/* プロフィール編集ボタン（モック） */}
-                <div className="flex justify-end pt-3">
-                    <button className="px-4 py-1.5 border border-gray-300 rounded-full text-sm font-black hover:bg-gray-50 transition-colors">
-                        プロフィールを編集
-                    </button>
-                </div>
-
-                {/* ユーザー名・ID */}
-                <div className="mt-4">
-                    <h2 className="text-xl font-black text-gray-900 leading-tight">サンプルユーザー</h2>
-                    <p className="text-gray-500 text-sm">@sample_user_2026</p>
-                </div>
-
-                {/* 自己紹介 */}
-                <p className="mt-3 text-sm text-gray-800 leading-relaxed">
-                    最新のテクノロジーとサイエンスに興味があります。AIが変える未来を NewsMatch で追いかけています。🔭💻 #Tech #Science #Future
-                </p>
-
-                {/* メタ情報（場所・リンク・登録日） */}
-                <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-gray-500 text-[13px]">
-                    <div className="flex items-center gap-1">
-                        <MapPin size={14} />
-                        <span>東京, 日本</span>
+                <div className="px-6 -mt-16 flex flex-col items-center">
+                    {/* アバター */}
+                    <div className="w-32 h-32 rounded-3xl bg-white p-2 shadow-2xl relative z-10 overflow-hidden transform rotate-3">
+                        <div className="w-full h-full rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-700 flex items-center justify-center text-white text-5xl font-black shadow-inner">
+                            {profile.name.charAt(0)}
+                        </div>
                     </div>
-                    <div className="flex items-center gap-1 text-blue-600">
-                        <LinkIcon size={14} />
-                        <span>newsmatch.jp/profile</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                        <Calendar size={14} />
-                        <span>2026年1月から利用しています</span>
-                    </div>
-                </div>
 
-                {/* フォロー・フォロワー */}
-                <div className="mt-3 flex gap-4 text-sm">
-                    <div className="flex gap-1">
-                        <span className="font-black text-gray-900">128</span>
-                        <span className="text-gray-500">フォロー中</span>
+                    <div className="mt-6 text-center w-full max-w-sm">
+                        <div className="flex items-center justify-center gap-2 mb-1">
+                            <h2 className="text-3xl font-black text-gray-900 tracking-tight">{profile.name}</h2>
+                            <button
+                                onClick={() => {
+                                    setTempProfile({ ...profile });
+                                    setIsEditing(true);
+                                }}
+                                className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all"
+                            >
+                                <Edit2 size={18} />
+                            </button>
+                        </div>
+                        <p className="text-sm font-medium text-gray-500 mb-6 italic">{profile.website}</p>
+                        <p className="text-gray-700 leading-relaxed font-medium bg-gray-50 p-4 rounded-2xl text-sm border border-gray-100 inline-block">
+                            {profile.bio}
+                        </p>
                     </div>
-                    <div className="flex gap-1">
-                        <span className="font-black text-gray-900">1.2K</span>
-                        <span className="text-gray-500">フォロワー</span>
+
+                    <div className="mt-6 flex flex-wrap justify-center gap-6 text-[13px] font-bold text-gray-400">
+                        <div className="flex items-center gap-1.5">
+                            <MapPin size={16} className="text-blue-500" />
+                            <span>{profile.location}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                            <Calendar size={16} className="text-indigo-500" />
+                            <span>Joined Jan 2026</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* タブメニュー */}
-            <div className="flex border-b border-gray-100 sticky top-0 bg-white/80 backdrop-blur-md z-10">
-                <button
-                    onClick={() => setActiveTab('saved')}
-                    className="flex-1 py-4 text-sm font-bold relative group"
-                >
-                    <span className={cn(activeTab === 'saved' ? "text-gray-900" : "text-gray-500 group-hover:text-gray-700")}>保存済み</span>
-                    {activeTab === 'saved' && <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-1 bg-blue-600 rounded-full" />}
-                </button>
-                <button
-                    onClick={() => setActiveTab('likes')}
-                    className="flex-1 py-4 text-sm font-bold relative group"
-                >
-                    <span className={cn(activeTab === 'likes' ? "text-gray-900" : "text-gray-500 group-hover:text-gray-700")}>いいね</span>
-                    {activeTab === 'likes' && <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-blue-600 rounded-full" />}
-                </button>
+            {/* セクションタイトル */}
+            <div className="px-6 pt-10 pb-6">
+                <div className="flex items-center justify-between">
+                    <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.3em]">あなたのセレクト</h3>
+                    <div className="h-px bg-gray-200 flex-1 ml-4"></div>
+                </div>
             </div>
 
-            {/* コンテンツリスト */}
-            <div className="flex-1">
-                {activeTab === 'saved' ? (
-                    savedArticles.length > 0 ? (
-                        <div className="divide-y divide-gray-50">
-                            {savedArticles.map(article => (
-                                <div
-                                    key={article.id}
-                                    onClick={() => setSelectedArticle(article)}
-                                    className="p-4 flex gap-4 hover:bg-gray-50 cursor-pointer transition-colors active:bg-gray-100"
-                                >
-                                    <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0">
-                                        <img src={article.imageUrl} className="w-full h-full object-cover" alt="" />
+            {/* ニュースリスト（直接表示） */}
+            <div className="px-6 pb-20">
+                {savedArticles.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-6">
+                        {savedArticles.map(article => (
+                            <motion.div
+                                whileHover={{ y: -4 }}
+                                whileTap={{ scale: 0.98 }}
+                                key={article.id}
+                                onClick={() => setSelectedArticle(article)}
+                                className="bg-white rounded-[32px] p-2 shadow-sm border border-gray-100 flex gap-4 cursor-pointer overflow-hidden transition-all group"
+                            >
+                                <div className="w-28 h-28 rounded-2xl overflow-hidden shrink-0">
+                                    <img src={article.imageUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="" />
+                                </div>
+                                <div className="flex flex-col justify-center pr-4 min-w-0">
+                                    <div className="flex items-center gap-2 mb-1.5">
+                                        <span className="text-[9px] font-black text-white bg-indigo-600 px-2.5 py-0.5 rounded-full uppercase tracking-widest">{article.category}</span>
+                                        <span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">{article.source}</span>
                                     </div>
-                                    <div className="flex flex-col justify-between py-0.5 min-w-0">
-                                        <div>
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <span className="text-[10px] font-bold text-blue-600 uppercase tracking-tighter shrink-0">{article.category}</span>
-                                                <span className="text-[10px] text-gray-400">·</span>
-                                                <span className="text-[10px] text-gray-500 font-medium truncate">{article.source}</span>
-                                            </div>
-                                            <h4 className="text-[13px] font-bold text-gray-900 line-clamp-2 leading-snug">
-                                                {article.title}
-                                            </h4>
-                                        </div>
-                                        <div className="flex items-center justify-between mt-1">
-                                            <span className="text-[10px] text-gray-400 font-medium">#{article.tag}</span>
-                                            <ChevronRight size={14} className="text-gray-300" />
-                                        </div>
+                                    <h4 className="text-base font-black text-gray-900 line-clamp-2 leading-tight tracking-tight mb-2">
+                                        {article.title}
+                                    </h4>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-[10px] text-indigo-400 font-black">#{article.tag}</span>
+                                        <span className="text-[10px] text-gray-300 font-bold">{article.publishedAt.split('-').slice(1).join('/')}</span>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="flex flex-col items-center justify-center py-20 px-10 text-center">
-                            <div className="bg-gray-100 p-4 rounded-full mb-3 text-gray-400">
-                                <Bookmark size={32} />
-                            </div>
-                            <h3 className="text-base font-bold text-gray-900">保存済みのニュースはありません</h3>
-                            <p className="text-xs text-gray-500 mt-1">気になる記事をスワイプして保存すると、ここに表示されます。</p>
-                        </div>
-                    )
+                            </motion.div>
+                        ))}
+                    </div>
                 ) : (
-                    <div className="flex flex-col items-center justify-center py-20 text-center opacity-50">
-                        <p className="text-sm font-bold text-gray-400">いいねしたニュースはまだありません</p>
+                    <div className="text-center py-20 bg-white rounded-[40px] border border-dashed border-gray-200">
+                        <div className="bg-gray-50 p-6 rounded-full inline-block mb-4 text-gray-300">
+                            <Bookmark size={40} />
+                        </div>
+                        <h3 className="text-lg font-bold text-gray-400">まだ記事がありません</h3>
+                        <p className="text-xs text-gray-400 mt-1 uppercase tracking-widest font-black">Swipe to add articles</p>
                     </div>
                 )}
             </div>
+
+            {/* 編集モーダル */}
+            <AnimatePresence>
+                {isEditing && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[110] bg-black/60 backdrop-blur-md flex items-center justify-center p-6"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 20 }}
+                            className="bg-white w-full max-w-sm rounded-[40px] overflow-hidden shadow-2xl p-8"
+                        >
+                            <div className="flex justify-between items-center mb-8">
+                                <h3 className="text-2xl font-black text-gray-900 tracking-tight">プロフィール編集</h3>
+                                <button onClick={() => setIsEditing(false)} className="bg-gray-100 p-2 rounded-full text-gray-400">
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2 px-1">名前</label>
+                                    <input
+                                        type="text"
+                                        value={tempProfile.name}
+                                        onChange={(e) => setTempProfile({ ...tempProfile, name: e.target.value })}
+                                        className="w-full bg-gray-50 border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block mb-2 px-1">自己紹介</label>
+                                    <textarea
+                                        rows={4}
+                                        value={tempProfile.bio}
+                                        onChange={(e) => setTempProfile({ ...tempProfile, bio: e.target.value })}
+                                        className="w-full bg-gray-50 border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none transition-all resize-none"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="mt-10 flex gap-4">
+                                <button
+                                    onClick={handleSave}
+                                    className="flex-1 bg-blue-600 text-white h-16 rounded-[24px] font-black flex items-center justify-center gap-2 shadow-xl shadow-blue-100"
+                                >
+                                    <Check size={20} />
+                                    保存する
+                                </button>
+                                <button
+                                    onClick={() => setIsEditing(false)}
+                                    className="px-6 h-16 bg-gray-100 text-gray-400 rounded-[24px] font-black"
+                                >
+                                    キャンセル
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
