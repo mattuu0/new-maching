@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { Calendar, MapPin, Bookmark, Edit2, Check, X } from 'lucide-react';
+import { Calendar, MapPin, Bookmark, Edit2, Check, X, Copy } from 'lucide-react';
 import type { NewsArticle } from '../types/news';
 import { NewsDetailModal } from './NewsDetailModal';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// Helper for conditional class names
+const cn = (...classes: (string | boolean | undefined | null)[]) => classes.filter(Boolean).join(' ');
 
 interface ProfilePageProps {
     savedArticles: NewsArticle[];
@@ -10,13 +13,12 @@ interface ProfilePageProps {
 
 /**
  * ユーザープロフィールコンポーネント
- * ミニマルで洗練された独自デザイン
  */
 export const ProfilePage: React.FC<ProfilePageProps> = ({ savedArticles }) => {
     const [selectedArticle, setSelectedArticle] = useState<NewsArticle | null>(null);
     const [isEditing, setIsEditing] = useState(false);
+    const [isCopied, setIsCopied] = useState(false);
 
-    // プロフィール情報（本来はグローバルステートやサーバーで管理するが、ここではローカルでモック）
     const [profile, setProfile] = useState({
         name: 'サンプルユーザー',
         bio: '最新のテクノロジーとサイエンスに興味があります。AIが変える未来を NewsMatch で追いかけています。🔭💻 #Tech #Science #Future',
@@ -31,6 +33,14 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ savedArticles }) => {
         setIsEditing(false);
     };
 
+    const copyProfileLink = () => {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url).then(() => {
+            setIsCopied(true);
+            setTimeout(() => setIsCopied(false), 2000);
+        });
+    };
+
     return (
         <div className="flex flex-col h-full bg-gray-50 overflow-y-auto no-scrollbar pb-10">
             {/* 詳細モーダル */}
@@ -39,17 +49,17 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ savedArticles }) => {
                 onClose={() => setSelectedArticle(null)}
             />
 
-            {/* ヘッダーセクション（独自デザイン） */}
+            {/* ヘッダーセクション */}
             <div className="relative bg-white pb-6 shadow-sm border-b border-gray-100">
-                {/* カバーグラデーション */}
-                <div className="h-40 w-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 overflow-hidden relative">
-                    <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+                {/* カバーグラデーション（落ち着いたダークブルー系に修正） */}
+                <div className="h-40 w-full bg-gradient-to-br from-slate-900 via-indigo-950 to-blue-900 overflow-hidden relative">
+                    <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
                 </div>
 
                 <div className="px-6 -mt-16 flex flex-col items-center">
                     {/* アバター */}
-                    <div className="w-32 h-32 rounded-3xl bg-white p-2 shadow-2xl relative z-10 overflow-hidden transform rotate-3">
-                        <div className="w-full h-full rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-700 flex items-center justify-center text-white text-5xl font-black shadow-inner">
+                    <div className="w-32 h-32 rounded-3xl bg-white p-2 shadow-2xl relative z-10 overflow-hidden">
+                        <div className="w-full h-full rounded-2xl bg-gradient-to-tr from-slate-800 to-indigo-900 flex items-center justify-center text-white text-5xl font-black shadow-inner">
                             {profile.name.charAt(0)}
                         </div>
                     </div>
@@ -67,8 +77,22 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ savedArticles }) => {
                                 <Edit2 size={18} />
                             </button>
                         </div>
-                        <p className="text-sm font-medium text-gray-500 mb-6 italic">{profile.website}</p>
-                        <p className="text-gray-700 leading-relaxed font-medium bg-gray-50 p-4 rounded-2xl text-sm border border-gray-100 inline-block">
+
+                        <div className="flex items-center justify-center gap-3 mb-6">
+                            <p className="text-sm font-medium text-gray-400 italic">{profile.website}</p>
+                            <button
+                                onClick={copyProfileLink}
+                                className={cn(
+                                    "flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest transition-all",
+                                    isCopied ? "bg-green-500 text-white" : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                                )}
+                            >
+                                {isCopied ? <Check size={12} /> : <Copy size={12} />}
+                                {isCopied ? "Copied!" : "Copy Link"}
+                            </button>
+                        </div>
+
+                        <p className="text-gray-700 leading-relaxed font-medium bg-gray-50 p-4 rounded-2xl text-sm border border-gray-100 inline-block shadow-inner">
                             {profile.bio}
                         </p>
                     </div>
@@ -94,7 +118,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ savedArticles }) => {
                 </div>
             </div>
 
-            {/* ニュースリスト（直接表示） */}
+            {/* ニュースリスト */}
             <div className="px-6 pb-20">
                 {savedArticles.length > 0 ? (
                     <div className="grid grid-cols-1 gap-6">
@@ -182,7 +206,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ savedArticles }) => {
                             <div className="mt-10 flex gap-4">
                                 <button
                                     onClick={handleSave}
-                                    className="flex-1 bg-blue-600 text-white h-16 rounded-[24px] font-black flex items-center justify-center gap-2 shadow-xl shadow-blue-100"
+                                    className="flex-1 bg-gray-900 text-white h-16 rounded-[24px] font-black flex items-center justify-center gap-2 shadow-xl shadow-gray-200 hover:bg-black transition-all"
                                 >
                                     <Check size={20} />
                                     保存する
