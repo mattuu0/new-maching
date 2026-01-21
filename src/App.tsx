@@ -144,7 +144,7 @@ function App() {
               exit={{ opacity: 0, y: 20 }}
               className="h-full"
             >
-              <ProfilePage />
+              <ProfilePage savedArticles={savedArticles} />
             </motion.div>
           )}
         </AnimatePresence>

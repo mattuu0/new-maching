@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { NewsArticle } from '../types/news';
 import { Bookmark, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import { cn } from '../utils/cn';
+import { NewsDetailModal } from './NewsDetailModal';
 
 interface SavedNewsViewProps {
     savedArticles: NewsArticle[];
@@ -14,6 +15,7 @@ interface SavedNewsViewProps {
 export const SavedNewsView: React.FC<SavedNewsViewProps> = ({ savedArticles }) => {
     const [selectedTag, setSelectedTag] = useState<string | null>(null);
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
+    const [selectedArticle, setSelectedArticle] = useState<NewsArticle | null>(null);
 
     // 全タグのリストを抽出
     const allTags = Array.from(new Set(savedArticles.map(a => a.tag)));
@@ -44,6 +46,12 @@ export const SavedNewsView: React.FC<SavedNewsViewProps> = ({ savedArticles }) =
 
     return (
         <div className="flex flex-col h-full bg-gray-50">
+            {/* 詳細モーダル */}
+            <NewsDetailModal
+                article={selectedArticle}
+                onClose={() => setSelectedArticle(null)}
+            />
+
             {/* フィルターセクション */}
             <div className="p-4 bg-white border-b border-gray-100 space-y-4">
                 {/* 日付フィルター */}
@@ -115,7 +123,8 @@ export const SavedNewsView: React.FC<SavedNewsViewProps> = ({ savedArticles }) =
                     filteredArticles.map(article => (
                         <div
                             key={article.id}
-                            className="group bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex gap-4 active:scale-[0.98] transition-all"
+                            onClick={() => setSelectedArticle(article)}
+                            className="group bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex gap-4 active:scale-[0.98] cursor-pointer transition-all"
                         >
                             <div className="w-24 h-24 rounded-xl overflow-hidden shrink-0">
                                 <img
