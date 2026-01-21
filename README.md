@@ -1,73 +1,52 @@
-# React + TypeScript + Vite
+# NewsMatch - AI要約ニュースマッチングアプリ (検証用プロトタイプ)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+NewsMatchは、ニュースをマッチングアプリのような直感的なスワイプ操作で「選別」し、自分だけのパーソナライズされたニュースフィードを構築できるWebアプリケーションのプロトタイプです。
 
-Currently, two official plugins are available:
+## ⚠️ 検証用モジュールについて
+本プロジェクトは**検証用のモックアップ**です。
+- **データ**: 現在表示されているニュースは `src/data/mockNews.ts` に定義されたサンプルデータです。
+- **AI要約**: 本文の要約はあらかじめ作成された固定テキストであり、リアルタイムのAI処理は含まれていません。
+- **永続化**: データの保存はメモリ内（useState）で行われており、ブラウザをリロードするとリセットされます。
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🌟 主な機能
 
-## React Compiler
+- **Tinderスタイル・スワイプ**:
+  - 右スワイプ/「気になる」: 記事を自分のお気に入りに保存。
+  - 左スワイプ/「見ない」: 記事をスキップ。
+- **AI要約ビュー**:
+  - 複雑なニュースを数行の要約で表示。
+- **マイニュース (保存済み一覧)**:
+  - 興味ありとした記事をタグや日付でフィルタリングして閲覧可能。
+- **プロフィール/統計**:
+  - 読んだ記事数や好みの傾向を可視化（モックUI）。
+- **無限スワイプ**:
+  - スタックがなくなると自動的に次の記事候補を生成します。
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠️ 技術スタック
 
-## Expanding the ESLint configuration
+- **Frontend**: React 19, TypeScript
+- **Styling**: Tailwind CSS v4
+- **Animation**: Framer Motion
+- **Icons**: Lucide React
+- **Build Tool**: Vite
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🚀 開発環境のセットアップ
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+```bash
+# 依存関係のインストール
+npm install
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# 開発サーバーの起動
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 📂 プロジェクト構造
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- `src/components/`: UIコンポーネント
+- `src/types/`: TypeScript型定義
+- `src/data/`: 検証用モックデータ
+- `src/utils/`: 共通ユーティリティ
+- `src/App.tsx`: メインロジック
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+Developed as a high-fidelity prototype to demonstrate the core user experience.
