@@ -4,6 +4,7 @@ import type { NewsArticle } from './types/news';
 import { NewsCard } from './components/NewsCard';
 import { SavedNewsView } from './components/SavedNewsView';
 import { ProfilePage } from './components/ProfilePage';
+import { TutorialOverlay } from './components/TutorialOverlay';
 import { AnimatePresence, motion } from 'framer-motion';
 import { RotateCcw, LayoutGrid, Bookmark, User as UserIcon } from 'lucide-react';
 import { cn } from './utils/cn';
@@ -17,11 +18,23 @@ function App() {
   const [activeView, setActiveView] = useState<ActiveView>('discover');
   const [newsStack, setNewsStack] = useState<NewsArticle[]>([]);
   const [savedArticles, setSavedArticles] = useState<NewsArticle[]>([]);
+  const [showTutorial, setShowTutorial] = useState(false);
 
-  // 初期データの読み込み（無限ループは行わない）
+  // 初期データの読み込みとチュートリアルの表示判定
   useEffect(() => {
     setNewsStack([...MOCK_NEWS]);
+
+    // localStorage を使用して初回のみ表示
+    const hasSeenTutorial = localStorage.getItem('hasSeenTutorial');
+    if (!hasSeenTutorial) {
+      setShowTutorial(true);
+    }
   }, []);
+
+  const closeTutorial = () => {
+    setShowTutorial(false);
+    localStorage.setItem('hasSeenTutorial', 'true');
+  };
 
   /**
    * スワイプ処理
@@ -46,6 +59,9 @@ function App() {
 
   return (
     <div className="flex flex-col h-screen max-w-md mx-auto bg-white shadow-2xl relative overflow-hidden font-sans border-x border-gray-100">
+      {/* チュートリアル */}
+      <TutorialOverlay isVisible={showTutorial} onClose={closeTutorial} />
+
       {/* ヘッダー */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 px-6 py-4">
         <div className="flex justify-between items-center w-full">
@@ -71,9 +87,7 @@ function App() {
               <div className="relative w-full h-full max-h-[600px] flex items-center justify-center">
                 <AnimatePresence>
                   {newsStack.length > 0 ? (
-                    // 3枚まで重ねて表示
                     newsStack.slice(0, 3).reverse().map((article, index) => {
-                      // reverseしているので本来のindexは逆転する
                       const displayIndex = (newsStack.slice(0, 3).length - 1) - index;
                       return (
                         <NewsCard
