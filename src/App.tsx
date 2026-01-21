@@ -1,8 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { MOCK_NEWS } from './data/mockNews';
 import type { NewsArticle } from './types/news';
 import { NewsCard } from './components/NewsCard';
-import { Navigation } from './components/Navigation';
 import { SavedNewsView } from './components/SavedNewsView';
 import { ProfilePage } from './components/ProfilePage';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -19,28 +18,10 @@ function App() {
   const [newsStack, setNewsStack] = useState<NewsArticle[]>([]);
   const [savedArticles, setSavedArticles] = useState<NewsArticle[]>([]);
 
-  /**
-   * 無限にモックニュースを生成するための関数
-   */
-  const generateMoreNews = useCallback(() => {
-    const moreNews = MOCK_NEWS.map(news => ({
-      ...news,
-      id: `${news.id}-${Date.now()}-${Math.random()}`
-    }));
-    setNewsStack(prev => [...prev, ...moreNews]);
-  }, []);
-
-  // 初期データの読み込み
+  // 初期データの読み込み（無限ループは行わない）
   useEffect(() => {
     setNewsStack([...MOCK_NEWS]);
   }, []);
-
-  // スタックが少なくなったら自動的に追加（無限スクロール）
-  useEffect(() => {
-    if (newsStack.length < 3 && newsStack.length > 0) {
-      generateMoreNews();
-    }
-  }, [newsStack.length, generateMoreNews]);
 
   /**
    * スワイプ処理
@@ -51,7 +32,7 @@ function App() {
 
     if (direction === 'right') {
       setSavedArticles(prev => {
-        if (prev.find(a => a.title === swipedArticle.title)) return prev;
+        if (prev.find(a => a.id === swipedArticle.id)) return prev;
         return [swipedArticle, ...prev];
       });
     }
@@ -72,7 +53,7 @@ function App() {
             NewsMatch
           </h1>
           <div className="flex gap-1">
-            <span className="text-[10px] font-bold bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">β 版</span>
+            <span className="text-[10px] font-bold bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">PROTOTYPE</span>
           </div>
         </div>
       </header>
@@ -82,27 +63,33 @@ function App() {
           {activeView === 'discover' && (
             <motion.div
               key="discover"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               className="h-full flex flex-col items-center justify-center p-6"
             >
-              <div className="relative w-full h-full max-h-[580px] flex items-center justify-center">
+              <div className="relative w-full h-full max-h-[600px] flex items-center justify-center">
                 <AnimatePresence>
                   {newsStack.length > 0 ? (
-                    newsStack.slice(0, 2).reverse().map((article, index) => (
-                      <NewsCard
-                        key={article.id}
-                        article={article}
-                        isFront={index === 1 || newsStack.length === 1}
-                        onSwipe={handleSwipe}
-                      />
-                    ))
+                    // 3枚まで重ねて表示
+                    newsStack.slice(0, 3).reverse().map((article, index) => {
+                      // reverseしているので本来のindexは逆転する
+                      const displayIndex = (newsStack.slice(0, 3).length - 1) - index;
+                      return (
+                        <NewsCard
+                          key={article.id}
+                          article={article}
+                          isFront={displayIndex === 0}
+                          index={displayIndex}
+                          onSwipe={handleSwipe}
+                        />
+                      );
+                    })
                   ) : (
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="text-center p-8 bg-white rounded-3xl shadow-sm border border-gray-100"
+                      className="text-center p-8 bg-white rounded-[40px] shadow-sm border border-gray-100 w-full"
                     >
                       <div className="bg-blue-50 p-6 rounded-full inline-block mb-4 text-blue-600">
                         <RotateCcw
@@ -111,36 +98,18 @@ function App() {
                           onClick={handleReset}
                         />
                       </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">すべて読み終えました</h3>
-                      <p className="text-sm text-gray-500 mb-6">新しいニュースを読み込み中...</p>
+                      <h3 className="text-xl font-bold text-gray-900 mb-2">本日のニュースは以上です</h3>
+                      <p className="text-sm text-gray-500 mb-6">新しい記事が届くまでお待ちください</p>
+                      <button
+                        onClick={handleReset}
+                        className="px-8 py-3 bg-gray-900 text-white rounded-full font-bold text-sm tracking-widest hover:bg-black transition-all"
+                      >
+                        最初から見る
+                      </button>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
-
-              {/* 操作ヒント */}
-              {newsStack.length > 0 && (
-                <div className="mt-8 flex gap-12 items-center">
-                  <button
-                    onClick={() => handleSwipe('left')}
-                    className="flex flex-col items-center gap-1.5 group"
-                  >
-                    <div className="w-14 h-14 border-2 border-gray-100 bg-white shadow-sm group-hover:bg-red-50 group-hover:border-red-200 rounded-full flex items-center justify-center text-gray-400 group-hover:text-red-500 transition-all active:scale-90">
-                      <span className="text-2xl font-light">✕</span>
-                    </div>
-                    <span className="text-[10px] font-black uppercase tracking-tighter text-gray-400">見ない</span>
-                  </button>
-                  <button
-                    onClick={() => handleSwipe('right')}
-                    className="flex flex-col items-center gap-1.5 group"
-                  >
-                    <div className="w-14 h-14 border-2 border-gray-100 bg-white shadow-sm group-hover:bg-green-50 group-hover:border-green-200 rounded-full flex items-center justify-center text-gray-400 group-hover:text-green-500 transition-all active:scale-90">
-                      <span className="text-2xl">♥</span>
-                    </div>
-                    <span className="text-[10px] font-black uppercase tracking-tighter text-gray-400">気になる</span>
-                  </button>
-                </div>
-              )}
             </motion.div>
           )}
 
@@ -176,21 +145,21 @@ function App() {
           active={activeView === 'discover'}
           onClick={() => setActiveView('discover')}
           icon={<LayoutGrid size={24} />}
-          label="探す"
+          label="発見"
           color="blue"
         />
         <BottomTab
           active={activeView === 'saved'}
           onClick={() => setActiveView('saved')}
           icon={<Bookmark size={24} />}
-          label="保存"
+          label="保存済み"
           color="red"
         />
         <BottomTab
           active={activeView === 'profile'}
           onClick={() => setActiveView('profile')}
           icon={<UserIcon size={24} />}
-          label="設定"
+          label="アカウント"
           color="indigo"
         />
       </nav>
@@ -227,7 +196,7 @@ const BottomTab: React.FC<BottomTabProps> = ({ active, onClick, icon, label, col
       <div className={cn("p-2 rounded-2xl transition-all", bgColors[color])}>
         {icon}
       </div>
-      <span className="text-[10px] font-bold">{label}</span>
+      <span className="text-[10px] font-bold tracking-tighter">{label}</span>
     </button>
   );
 };
