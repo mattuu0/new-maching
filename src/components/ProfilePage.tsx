@@ -11,11 +11,11 @@ export const ProfilePage: React.FC = () => {
             <div className="bg-white p-8 pt-12 text-center border-b border-gray-100">
                 <div className="relative inline-block">
                     <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg mb-4 mx-auto">
-                        A
+                        S
                     </div>
                     <div className="absolute bottom-4 right-0 bg-green-500 w-6 h-6 rounded-full border-4 border-white"></div>
                 </div>
-                <h2 className="text-xl font-bold text-gray-900">アンティグラビアン ユーザー</h2>
+                <h2 className="text-xl font-bold text-gray-900">サンプルユーザー</h2>
                 <p className="text-sm text-gray-500">Premium Member Since 2026</p>
             </div>
 
